@@ -1,0 +1,106 @@
+{
+	"info": {
+		"_postman_id": "ca44acb9-87f0-402f-8dd5-2eb3c051b8a2",
+		"name": "UrlShortener",
+		"description": "Simple CRUD collection for url-shortener project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28155530"
+	},
+	"item": [
+		{
+			"name": "Create Short Url",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"url\": \"https://my-super-long-url.com/that-is-indeed-veeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeery-long\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/v1/urls",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"urls"
+					]
+				},
+				"description": "\nThis API endpoint allows you to create a new URL. \n\n### Request Body\n- `url` (string, required): The URL to be added.\n\n### Response\n- Status: 200 OK\n- Content-Type: application/json\n- `url` (string): The URL that was added.\n\nMake sure to provide a valid URL in the request body to successfully add a new URL.\n"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all URLs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/urls",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"urls"
+					]
+				},
+				"description": "This endpoint makes an HTTP GET request to retrieve a list of URLs. The response will be in JSON format and will include an array of URL objects, each containing an id, version, shortUrl, originalUrl, createdBy, updatedBy, createdAt, and updatedAt."
+			},
+			"response": []
+		},
+		{
+			"name": "Get Url",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/urls/{url_id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"urls",
+						"{url_id}"
+					]
+				},
+				"description": "This endpoint makes an HTTP GET request to retrieve information about a specific URL with the ID (uuid v4 format). The last execution of this request returned a 404 status code with a JSON response containing a \"message\" key."
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Url",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/v1/urls/{url_id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"v1",
+						"urls",
+						"{url_id}"
+					]
+				},
+				"description": "This API endpoint sends an HTTP DELETE request to the specified URL to delete the resource identified by the {url_id} parameter.\n\nUpon successful execution, the server returns a response with a status code of 204 and a Content-Type of text/xml. The response body is null."
+			},
+			"response": []
+		}
+	]
+}
