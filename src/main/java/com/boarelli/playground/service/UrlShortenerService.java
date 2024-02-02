@@ -11,12 +11,15 @@ import com.boarelli.playground.model.dtos.UrlDTO;
 import com.boarelli.playground.model.entities.UrlEntity;
 import com.boarelli.playground.model.errors.UrlAlreadyExistsException;
 import com.boarelli.playground.model.errors.UrlNotFoundException;
+import com.boarelli.playground.model.errors.UrlNotValidException;
 import com.boarelli.playground.model.mapper.UrlMapper;
 import com.boarelli.playground.model.web.CreateUrlResponse;
 import com.boarelli.playground.repository.UrlDTORepository;
 import com.boarelli.playground.repository.UrlEntityRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Streamable;
@@ -34,6 +37,7 @@ public class UrlShortenerService {
     private final UrlEntityRepository urlEntityRepository;
     private final UrlDTORepository urlDTORepository;
     private final UrlMapper urlMapper;
+    private final UrlValidator urlValidator;
 
 
     @Autowired
@@ -43,6 +47,7 @@ public class UrlShortenerService {
                                UrlDTORepository urlDTORepository) {
         this.baseUrl = baseUrl;
         this.urlShortener = urlShortener;
+        this.urlValidator = new UrlValidator();
         this.urlMapper = urlMapper;
         this.urlEntityRepository = urlEntityRepository;
         this.urlDTORepository = urlDTORepository;
@@ -60,6 +65,12 @@ public class UrlShortenerService {
     }
 
     public UrlDTO getUrl(String urlId) {
+        if (StringUtils.isBlank(urlId)) {
+            var message = String.format("url %s not valid", urlId);
+            log.warn(message);
+            throw new IllegalArgumentException(message);
+        }
+
         // Look if url is present in cache
         var cachedUrlDto = urlDTORepository.findById(UUID.fromString(urlId));
 
@@ -81,6 +92,12 @@ public class UrlShortenerService {
     }
 
     public CreateUrlResponse createCompressedUrl(String url) {
+        if (!urlValidator.isValid(url)) {
+            var message = String.format("url %s is not valid", url);
+            log.warn(message, url);
+            throw new UrlNotValidException(message);
+        }
+
         var shortUrl = baseUrl.concat(urlShortener.generateHashFromUrl(url));
 
         if (urlDTORepository.findByShortUrl(shortUrl).isPresent()) {
@@ -105,6 +122,12 @@ public class UrlShortenerService {
     }
 
     public void deleteUrl(String urlId) {
+        if (StringUtils.isBlank(urlId)) {
+            var message = String.format("url %s not valid", urlId);
+            log.warn(message);
+            throw new IllegalArgumentException(message);
+        }
+
         var deletedMessage = String.format("Deleted url with id %s", urlId);
 
         try {

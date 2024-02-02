@@ -70,6 +70,12 @@ public class UrlShortenerControllerTest extends IntegrationTest {
         assertNotNull(response);
     }
 
+    @DisplayName("get url - bad request")
+    @Test
+    void getUrlBadRequest() throws Exception {
+        this.mockMvc.perform(get("/v1/urls/ ")).andDo(print()).andExpect(status().isBadRequest());
+    }
+
     @DisplayName("create url and return all urls - ok")
     @Test
     void createShortUrlAndReturnAllUrlsOk() throws Exception {
@@ -84,12 +90,32 @@ public class UrlShortenerControllerTest extends IntegrationTest {
         assertEquals(2, urlDtoList.size());
     }
 
+    @DisplayName("create empty url - bad request")
+    @Test
+    void createEmptyUrlBadRequest() throws Exception {
+        this.mockMvc.perform(post("/v1/urls").content("{\"url\":\" \"}")
+                        .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("create not valid url - bad request")
+    @Test
+    void createNotValidUrlBadRequest() throws Exception {
+        this.mockMvc.perform(post("/v1/urls").content("{\"url\":\"this is not a valid url!\"}")
+                .contentType(MediaType.APPLICATION_JSON)).andDo(print()).andExpect(status().isBadRequest());
+    }
+
 
     @DisplayName("delete url - ok")
     @Test
     void deleteUrlOk() throws Exception {
         this.mockMvc.perform(delete("/v1/urls/"+existingUrl.getId()))
                 .andDo(print()).andExpect(status().isNoContent());
+    }
+
+    @DisplayName("delete url - bad request")
+    @Test
+    void deleteUrlBadRequest() throws Exception {
+        this.mockMvc.perform(delete("/v1/urls/ ")).andDo(print()).andExpect(status().isBadRequest());
     }
 
 }

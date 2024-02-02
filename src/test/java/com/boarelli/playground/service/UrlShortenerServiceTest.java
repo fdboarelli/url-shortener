@@ -5,6 +5,7 @@ import com.boarelli.playground.model.dtos.UrlDTO;
 import com.boarelli.playground.model.entities.UrlEntity;
 import com.boarelli.playground.model.errors.UrlAlreadyExistsException;
 import com.boarelli.playground.model.errors.UrlNotFoundException;
+import com.boarelli.playground.model.errors.UrlNotValidException;
 import com.boarelli.playground.model.mapper.UrlMapper;
 import com.boarelli.playground.model.mapper.UrlMapperImpl;
 import com.boarelli.playground.repository.UrlDTORepository;
@@ -55,6 +56,22 @@ public class UrlShortenerServiceTest {
         assertNotNull(response);
         String compressedUrlPattern = "https://test-url\\.com/[a-zA-Z0-9]{9,}$";
         assertTrue(response.getUrl().matches(compressedUrlPattern));
+    }
+
+    @DisplayName("create new url - url invalid")
+    @Test
+    void createNewCompressedUrlNotValidException() {
+        assertThrows(UrlNotValidException.class, () -> urlShortenerService.createCompressedUrl("https:y-long-url.com"));
+        verify(urlEntityRepository, never()).save(any(UrlEntity.class));
+        verify(urlDTORepository, never()).save(any(UrlDTO.class));
+    }
+
+    @DisplayName("create new url - url empty")
+    @Test
+    void createNewCompressedEmptyUrlNotValidException() {
+        assertThrows(UrlNotValidException.class, () -> urlShortenerService.createCompressedUrl(""));
+        verify(urlEntityRepository, never()).save(any(UrlEntity.class));
+        verify(urlDTORepository, never()).save(any(UrlDTO.class));
     }
 
     @DisplayName("create new url - already exists in cache exception")
@@ -117,6 +134,12 @@ public class UrlShortenerServiceTest {
         verify(urlDTORepository, times(1)).findById(any(UUID.class));
     }
 
+    @Test
+    void getUrlFailedForBlankUrl() {
+        assertThrows(IllegalArgumentException.class, () -> urlShortenerService.getUrl(""));
+        verify(urlEntityRepository, never()).findById(any(UUID.class));
+    }
+
     @DisplayName("get url - url not found exception")
     @Test
     void getUrlNotFoundException() {
@@ -139,6 +162,13 @@ public class UrlShortenerServiceTest {
         doThrow(UrlNotFoundException.class).when(urlEntityRepository).deleteById(any(UUID.class));
         assertThrows(UrlNotFoundException.class, () -> urlShortenerService.deleteUrl(UUID.randomUUID().toString()));
         verify(urlEntityRepository, times(1)).deleteById(any(UUID.class));
+    }
+
+    @DisplayName("delete url - id not valid exception")
+    @Test
+    void deleteUrlIdNotValidException() {
+        assertThrows(IllegalArgumentException.class, () -> urlShortenerService.deleteUrl(""));
+        verify(urlEntityRepository, never()).deleteById(any(UUID.class));
     }
 
 }
