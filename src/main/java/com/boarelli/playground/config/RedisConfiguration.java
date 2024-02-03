@@ -16,21 +16,18 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Configuration
 public class RedisConfiguration {
 
-    @Value("${spring.redis.host:localhost}")
-    private String REDIS_HOST;
-    @Value("${spring.redis.port:6379}")
-    private Integer REDIS_PORT;
-
     @Bean
-    public JedisConnectionFactory jedisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(REDIS_HOST, REDIS_PORT);
+    public JedisConnectionFactory jedisConnectionFactory(String redisHost, Integer redisPort) {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
         return new JedisConnectionFactory(config);
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
+    public RedisTemplate<String, Object> redisTemplate(
+            @Value("${spring.redis.host:localhost}") String redisHost,
+            @Value("${spring.redis.port:6379}") Integer redisPort) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(jedisConnectionFactory());
+        template.setConnectionFactory(jedisConnectionFactory(redisHost, redisPort));
         return template;
     }
 
