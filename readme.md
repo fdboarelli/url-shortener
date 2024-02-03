@@ -15,7 +15,7 @@ Virtual threads are used to boost scaling performances.
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Endpoints](#endpoints)
-- [Contributing](#contributing)
+- [Possible improvements](#improvements)
 - [License](#license)
 
 ## Introduction
@@ -23,11 +23,14 @@ Virtual threads are used to boost scaling performances.
 This project is a crud URL shortener service that allows you to create short aliases for long URLs. 
 
 Written in Java, it uses Spring Boot 3 as main framework while Postgresql is used as database.
-There is also a cache layer powered by Redis to improve performance for highload traffic.
+There is also a cache layer powered by Redis to improve performance for high-load traffic.
 
 ## Features
 
-- Create shorter URL for long URLs using sha256-v3 hashing.
+- Create shorter URL for long URLs using sha256-v3 hashing. 
+**Note** The produced hash is then encoded in base64 and only
+the first 9 digits are used (git-like approach). Hash collision is not addressed still, check the [possible improvements](#improvements) section
+for more details.
 - Get URL details by id.
 - Get all present URLS.
 - Allows deletions of URLs by id
@@ -121,6 +124,13 @@ Delete original URL by id:
 - Response body: empty
 
 It is not possible to update an existing URLs
+
+## Improvements
+
+Here's a list of possible improvements that could be implemented to improve the service:
+- Add JMeter stress tests to evaluate global performances.
+- Implement auth and BFA protections.
+- Implement hash collision resolution.
 
 ## License
 
