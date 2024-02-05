@@ -9,9 +9,11 @@ package com.boarelli.playground.components;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
 
 @Component
 public class UrlShortener {
@@ -22,7 +24,8 @@ public class UrlShortener {
     }
 
     public String generateHashFromUrl(String url) {
-        return DigestUtils.sha3_256Hex(digest.digest(url.getBytes(StandardCharsets.UTF_8))).substring(0, 9);
+        var inputWithTimestamp = url.concat(Long.toString(Instant.now().toEpochMilli()));
+        return DigestUtils.sha3_256Hex(digest.digest(inputWithTimestamp.getBytes(StandardCharsets.UTF_8))).substring(0, 9);
     }
 
 }

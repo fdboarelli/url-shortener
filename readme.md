@@ -28,14 +28,16 @@ There is also a cache layer powered by Redis to improve performance for high-loa
 ## Features
 
 - Create shorter URL for long URLs using sha256-v3 hashing. 
-**Note** The produced hash is then encoded in base64 and only
-the first 9 digits are used (git-like approach). Hash collision is not addressed still, check the [possible improvements](#improvements) section
-for more details.
 - Get URL details by id.
 - Get all present URLS.
 - Allows deletions of URLs by id
 
 Update of URLs has not been implemented as changing a short URL to another one of same format doesn't seem a useful operation.
+
+**Note** The produced hash is then encoded in base64 and only
+the first 9 digits are used (git-like approach). To reduce hash collisions due to poor randomness of the input,
+we're concatenating to the input the timestamp in milliseconds at the time of computation.
+With this solution, we have 18 quadrillions possible combination for our nine chars length short-urls.
 
 ## Prerequisites
 
@@ -130,7 +132,6 @@ It is not possible to update an existing URLs
 Here's a list of possible improvements that could be implemented to improve the service:
 - Add JMeter stress tests to evaluate global performances.
 - Implement auth and BFA protections.
-- Implement hash collision resolution.
 
 ## License
 
